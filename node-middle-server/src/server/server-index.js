@@ -9,8 +9,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
     cookie: { 
-		domain: 'localhost',
-		path: '/',
+		
 		secure: false
 	}
 }));
