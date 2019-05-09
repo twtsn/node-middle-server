@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Web管理平台</title>
+  <script src="https://cdn.bootcss.com/axios/0.19.0-beta.1/axios.js"></script>
+  <script>
+  axios.defaults.withCredentials = true;
+  axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+  </script>
+  <style>
+	body{
+		text-align: center;
+	}
+	table{
+		table-layout: fixed;
+		width: 300px;
+		border-collapse: collapse;
+		text-align: center;
+		margin: 0 auto;
+		margin-top: 20px;
+	}
+	table th{
+			width: 50%:
+	}
+  </style>
+</head>
+<body>
+  <h1>Web管理平台</h1>
+  <h3>登录人：<span id='login'></span> <button onclick="logout()">注销</button></h3>
+  <div id="loginContent">
+	   <p>name: <input id="name"/></p>
+	   <p>pwd: <input  id="pwd"/></p>
+	   <button onclick="login()">登录</button>
+	   
+   </div>
+   
+   <hr/>
+  <button onclick="getData()">获取数据</button>
+  <table border=1>
+	<thead>
+		<tr>
+			<th>name</th>
+			<th>age</th>
+		</tr>
+	</thead>
+	<tbody id="tableBody">
+	
+	</tbody>
+  </table>
+  <script>
+	getLoginUserInfo();
+	function getLoginUserInfo(){
+		axios.get('http://localhost:3002/api/loginUser').then(({data}) => {
+			var loginUser = data.data;
+			if(loginUser){
+				document.querySelector('#login').innerHTML = loginUser.name;
+				getData();
+				document.querySelector("#loginContent").style.display = 'none';
+			} else {
+				document.querySelector('#login').innerHTML = '未登录';
+				document.querySelector("#loginContent").style.display = 'block';
+			}
+		});
+	}
+	function login(){
+		var name = document.querySelector('#name').value;
+		var pwd = document.querySelector('#pwd').value;
+	
+		axios.post('http://localhost:3002/login', {name: name, pwd: pwd}).then(({data}) => {
+			var loginUser = data.data;
+			document.querySelector('#login').innerHTML = loginUser.name;
+			document.querySelector("#loginContent").style.display = 'block';
+			getData();
+		});
+	}
+	function logout(){
+	
+		axios.get('http://localhost:3002/logout').then(({data}) => {
+			location.href = '/';
+		});
+	}
+	function getData() {
+		axios.get('http://localhost:3001/api/list?test=123').then(({data}) => {
+			var html = [];
+			data.forEach((item) => {
+				html.push(`<tr><td>${item.name}</td><td>${item.age}</td></tr>`);
+			});
+			document.querySelector('#tableBody').innerHTML = html.join('');
+		});
+	}
+  </script>
+</body>
+</html>
